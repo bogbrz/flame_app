@@ -2,16 +2,56 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/components.dart';
+import 'package:flame/events.dart';
+import 'package:flame_app/components/pile.dart';
 import 'package:flame_app/klondike_game.dart';
 import 'package:flame_app/rank.dart';
 import 'package:flame_app/suit.dart';
 
-class Card extends PositionComponent {
+class Card extends PositionComponent with DragCallbacks {
   @override
   String toString() => rank.label + suit.label; // e.g. "Q♠" or "10♦"
+  //DRAG BEHAVIOR
+
+  @override
+  void onDragStart(DragStartEvent event) {
+    if (pile?.canMoveCard(this) ?? false) {
+      super.onDragStart(event);
+      priority = 100;
+    }
+  }
+
+  @override
+  void onDragUpdate(DragUpdateEvent event) {
+    if (!isDragged) {
+      return;
+    }
+    position += event.localDelta;
+  }
+
+  @override
+  void onDragEnd(DragEndEvent event) {
+    if (!isDragged) {
+      return;
+    }
+    super.onDragEnd(event);
+    final dropPiles = parent!
+        .componentsAtPoint(position + size / 2)
+        .whereType<Pile>()
+        .toList();
+    if (dropPiles.isNotEmpty) {
+      if (dropPiles.first.canAcceptCard(this)) {
+        pile!.removeCard(this);
+        dropPiles.first.acquireCard(this);
+        return;
+      }
+    }
+    pile!.returnCard(this);
+  }
 
   final Rank rank;
   final Suit suit;
+  Pile? pile;
   bool _faceUp;
   // CARD BACK DESIGN
   static final Paint backBackgroundPaint = Paint()

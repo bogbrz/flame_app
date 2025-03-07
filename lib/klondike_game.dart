@@ -4,10 +4,10 @@ import 'package:flame/components.dart';
 import 'package:flame/flame.dart';
 import 'package:flame/game.dart';
 import 'package:flame_app/components/card.dart';
-import 'package:flame_app/components/foundationPile.dart';
-import 'package:flame_app/components/stockPile.dart';
-import 'package:flame_app/components/tableauPile.dart';
-import 'package:flame_app/components/wastePile.dart';
+import 'package:flame_app/components/foundation_pile.dart';
+import 'package:flame_app/components/stock_pile.dart';
+import 'package:flame_app/components/tableau_pile.dart';
+import 'package:flame_app/components/waste_pile.dart';
 
 class KlondikeGame extends FlameGame {
   static const double cardWidth = 1000.0;
@@ -31,7 +31,7 @@ class KlondikeGame extends FlameGame {
       ..position = Vector2(cardWidth + 2 * cardGap, cardGap);
     final foundations = List.generate(
       4,
-      (i) => FoundationPile()
+      (i) => FoundationPile(i)
         ..size = cardSize
         ..position =
             Vector2((i + 3) * (cardWidth + cardGap) + cardGap, cardGap),
@@ -54,14 +54,29 @@ class KlondikeGame extends FlameGame {
     camera.viewfinder.position = Vector2(cardWidth * 3.5 + cardGap * 4, 0);
     camera.viewfinder.anchor = Anchor.topCenter;
 
-    final cards = [
+   
+
+     final cards = [
       for (var rank = 1; rank <= 13; rank++)
-        for (var suit = 0; suit < 4; suit++) Card(rank, suit)
+        for (var suit = 0; suit < 4; suit++)
+          Card(rank, suit)
     ];
     cards.shuffle();
     world.addAll(cards);
-    cards.forEach(stock.acquireCard);
+
+    int cardToDeal = cards.length - 1;
+    for (var i = 0; i < 7; i++) {
+      for (var j = i; j < 7; j++) {
+        piles[j].acquireCard(cards[cardToDeal--]);
+      }
+      piles[i].flipTopCard();
+    }
+    for(int n = 0; n <= cardToDeal; n++) {
+      stock.acquireCard(cards[n]);
+    }
   }
+
+  
 }
 
 Sprite klondikeSprite(double x, double y, double width, double height) {
