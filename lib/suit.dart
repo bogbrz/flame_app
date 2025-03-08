@@ -1,11 +1,14 @@
-import 'package:flame/components.dart';
+import 'package:flame/sprite.dart';
 import 'package:flutter/foundation.dart';
 import 'klondike_game.dart';
 
 @immutable
 class Suit {
   factory Suit.fromInt(int index) {
-    assert(index >= 0 && index <= 3);
+    assert(
+      index >= 0 && index <= 3,
+      'index is outside of the bounds of what a suit can be',
+    );
     return _singletons[index];
   }
 
@@ -23,6 +26,7 @@ class Suit {
     Suit._(3, '♠', 1178, 220, 176, 182),
   ];
 
+  /// Hearts and Diamonds are red, while Clubs and Spades are black.
   bool get isRed => value <= 1;
   bool get isBlack => value >= 2;
 }
