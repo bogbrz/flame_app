@@ -6,4 +6,5 @@ abstract class Pile {
    void removeCard(Card card);
      void acquireCard(Card card);
       void returnCard(Card card);
+      
 }

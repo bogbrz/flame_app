@@ -7,7 +7,9 @@ import 'package:flame_app/components/pile.dart';
 import 'package:flame_app/components/waste_pile.dart';
 import 'package:flame_app/klondike_game.dart';
 
-class StockPile extends PositionComponent with TapCallbacks, HasGameReference<KlondikeGame> implements Pile {
+class StockPile extends PositionComponent
+    with TapCallbacks, HasGameReference<KlondikeGame>
+    implements Pile {
   StockPile({super.position}) : super(size: KlondikeGame.cardSize);
 
   /// Which cards are currently placed onto this pile. The first card in the
@@ -34,6 +36,7 @@ class StockPile extends PositionComponent with TapCallbacks, HasGameReference<Kl
     card.pile = this;
     card.position = position;
     card.priority = _cards.length;
+
     _cards.add(card);
   }
 
@@ -44,11 +47,12 @@ class StockPile extends PositionComponent with TapCallbacks, HasGameReference<Kl
     final wastePile = parent!.firstChild<WastePile>()!;
     if (_cards.isEmpty) {
       wastePile.removeAllCards().reversed.forEach((card) {
+    
         card.flip();
         acquireCard(card);
       });
     } else {
-      for (var i = 0; i <  game.klondikeDraw; i++) {
+      for (var i = 0; i < game.klondikeDraw; i++) {
         if (_cards.isNotEmpty) {
           final card = _cards.removeLast();
           card.flip();

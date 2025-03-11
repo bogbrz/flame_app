@@ -56,9 +56,9 @@ class TableauPile extends PositionComponent implements Pile {
 
   //#endregion
 
-  void flipTopCard() {
+  void flipTopCard({double start = 0.1}) {
     assert(_cards.last.isFaceDown);
-    _cards.last.flip();
+    _cards.last.turnFaceUp(start: start, onComplete: layOutCards);
   }
 
   void layOutCards() {
@@ -66,7 +66,9 @@ class TableauPile extends PositionComponent implements Pile {
       return;
     }
     _cards[0].position.setFrom(position);
+    _cards[0].priority = 0;
     for (var i = 1; i < _cards.length; i++) {
+      _cards[i].priority = i;
       _cards[i].position
         ..setFrom(_cards[i - 1].position)
         ..add(_cards[i - 1].isFaceDown ? _fanOffset1 : _fanOffset2);

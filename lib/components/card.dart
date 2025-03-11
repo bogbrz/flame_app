@@ -25,10 +25,22 @@ class Card extends PositionComponent with DragCallbacks {
   bool _isDragging = false;
   Vector2 _whereCardStarted = Vector2(0, 0);
   final List<Card> attachedCards = [];
+  bool _isAnimatedFlip = false;
+  bool _isFaceUpView = false;
 
   bool get isFaceUp => _faceUp;
   bool get isFaceDown => !_faceUp;
-  void flip() => _faceUp = !_faceUp;
+  void flip() {
+    if (_isAnimatedFlip) {
+      // Let the animation determine the FaceUp/FaceDown state.
+
+      _faceUp = _isFaceUpView;
+    } else {
+      // No animation: flip and render the card immediately.
+      _faceUp = !_faceUp;
+      _isFaceUpView = _faceUp;
+    }
+  }
 
   @override
   String toString() => rank.label + suit.label; // e.g. "Q♠" or "10♦"
@@ -37,7 +49,7 @@ class Card extends PositionComponent with DragCallbacks {
 
   @override
   void render(Canvas canvas) {
-    if (_faceUp) {
+    if (_isFaceUpView) {
       _renderFront(canvas);
     } else {
       _renderBack(canvas);
@@ -283,7 +295,7 @@ class Card extends PositionComponent with DragCallbacks {
 
   void doMove(
     Vector2 to, {
-    double speed = 2,
+    double speed = 5,
     double start = 0.0,
     Curve curve = Curves.easeOutQuad,
     VoidCallback? onComplete,
@@ -295,6 +307,39 @@ class Card extends PositionComponent with DragCallbacks {
     add(MoveToEffect(
       to,
       EffectController(duration: dt, startDelay: start, curve: curve),
+      onComplete: () {
+        onComplete?.call();
+      },
+    ));
+  }
+
+  void turnFaceUp(
+      {double time = 0.3, double start = 0.0, VoidCallback? onComplete}) {
+    assert(
+      !_isFaceUpView,
+    );
+    assert(time > 0.0);
+    _isAnimatedFlip = true;
+    anchor = Anchor.topCenter;
+    position += Vector2(width / 2, 0);
+    priority = 100;
+    add(ScaleEffect.to(
+      Vector2(scale.x / 100, scale.y),
+      EffectController(
+        startDelay: start,
+        curve: Curves.easeOutSine,
+        duration: time / 2,
+        onMax: () {
+          _isFaceUpView = true;
+        },
+        reverseDuration: time / 2,
+        onMin: () {
+          _isAnimatedFlip = false;
+          _faceUp = true;
+          anchor = Anchor.topLeft;
+          position -= Vector2(width / 2, 0);
+        },
+      ),
       onComplete: () {
         onComplete?.call();
       },
