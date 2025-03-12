@@ -320,7 +320,7 @@ class Card extends PositionComponent with DragCallbacks {
     );
     assert(time > 0.0);
     _isAnimatedFlip = true;
-    anchor = Anchor.topCenter;
+    // anchor = Anchor.topCenter;
     position += Vector2(width / 2, 0);
     priority = 100;
     add(ScaleEffect.to(
@@ -336,7 +336,7 @@ class Card extends PositionComponent with DragCallbacks {
         onMin: () {
           _isAnimatedFlip = false;
           _faceUp = true;
-          anchor = Anchor.topLeft;
+          // anchor = Anchor.topCenter;
           position -= Vector2(width / 2, 0);
         },
       ),

@@ -47,7 +47,6 @@ class StockPile extends PositionComponent
     final wastePile = parent!.firstChild<WastePile>()!;
     if (_cards.isEmpty) {
       wastePile.removeAllCards().reversed.forEach((card) {
-    
         card.flip();
         acquireCard(card);
       });
